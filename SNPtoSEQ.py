@@ -188,6 +188,28 @@ def _validate_args(args):
         assert isinstance(args, dict)
     except AssertionError:
         raise TypeError("Args must be a dictionary!")
+    try:
+        assert set(_ARGUMENTS) == set(args.keys())
+    except AssertionError:
+        raise ValueError("Your arguments do not match the required argument list!")
+    (vcffile, reference, outname, no_fasta, no_bed, gff) = _ARGUMENTS
+    try:
+        assert os.path.isfile(args[vcffile])
+    except AssertionError:
+        raise FileNotFoundError("%s is not a file!" % args[vcffile])
+    if not args[reference] and not args[no_fasta]:
+        raise argparse.ArgumentTypeError("%s requires a reference FASTA file to extract sequences from" % sys.argv[0])
+    try:
+        assert args[outname]
+    except AssertionError:
+        raise argparse.ArgumentTypeError("Something fucked up")
+    if args[no_bed] and (args[gff] or args[no_fasta]):
+        raise argparse.ArgumentTypeError("'--no-bed' is incompatible with '--no-fasta' and '--gff'")
+    if args[gff] and args[no_bed]:
+        raise argparse.ArgumentTypeError("'--gff' is incompatible with '--no-bed'")
+    if args[no_fasta] and args[no_bed]:
+        raise argparse.ArgumentTypeError("'--no-fasta' is incompatible with '--no-bed'")
+
 
 #   Main
 def main():
@@ -196,6 +218,7 @@ def main():
     if not sys.argv[1:]:
         sys.exit(parser.print_help())
     args = vars(parser.parse_args())
+    _validate_args(args=args)
     sys.exit(args)
     try:
         reference = SeqIO.to_dict(SeqIO.parse(args['reference'], 'fasta'))
