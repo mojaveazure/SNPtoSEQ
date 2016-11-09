@@ -16,6 +16,24 @@ except ImportError as error:
     sys.exit("Please install " + error.name)
 
 
+_ARGUMENTS = (
+    'vcf',
+    'reference',
+    'outname',
+    'no_fasta',
+    'no_bed',
+    'gff'
+)
+
+def _outname(value):
+    try:
+        assert isinstance(value, str) or value is sys.stdout
+        return value
+    except AssertionError:
+        raise argparse.ArgumentTypeError("%s is not a valid output name" % value)
+
+
+#   A class for a line of a BED file
 class Bed(object):
     """This class describes a line of a BED file"""
 
@@ -55,6 +73,7 @@ class Bed(object):
         return NotImplemented
 
 
+#   A class for a sequence
 class Seq(object):
     """This class describes a sequence"""
 
@@ -82,3 +101,108 @@ class Seq(object):
             self._sequence
         )
         return '\n'.join(seq)
+
+
+def _arguments():
+    #   VCF in, always required
+    #   Reference in, required unless --no-fasta
+    #   Output name, defaults to stdout
+    #   --no-fasta, no FASTA output, mutually exclusive with --no-bed
+    #   --no-bed, no BED output, mutually exclusive with --no-bed and --gff
+    #   --gff, output GFF instead of BED, mutually exclusive with --no-bed
+    (vcffile, reference, outname, no_fasta, no_bed, gff) = _ARGUMENTS
+    parser = argparse.ArgumentParser()
+    inputs = parser.add_argument_group(
+        title='Input Options',
+        description='Hot potato'
+    )
+    inputs.add_argument( # VCF File
+        '-v',
+        '--vcf',
+        dest=str(vcffile),
+        type=str,
+        default=None,
+        required=True,
+        metavar='VCF FILE',
+        help="Input VCF file"
+    )
+    inputs.add_argument(
+        '-r',
+        '--reference',
+        dest=str(reference),
+        type=str,
+        default=None,
+        required=False,
+        metavar='REFERENCE FASTA FILE',
+        help="Reference genome in FASTA format"
+    )
+    outputs = parser.add_argument_group(
+        title='Output Options',
+        description='Set output options'
+    )
+    outputs.add_argument(
+        '-o',
+        '--outname',
+        dest=str(outname),
+        type=_outname,
+        default=sys.stdout,
+        required=False,
+        metavar='OUTPUT NAME',
+        help="Basename for the output file(s), defaults to stdout"
+    )
+    outputs.add_argument(
+        '--no-fasta',
+        dest=str(no_fasta),
+        action='store_const',
+        const=True,
+        default=False,
+        required=False,
+        metavar='NO FASTA OUTPUT',
+        help="Do we suppress FASTA output? Incompatible with '--no-bed'"
+    )
+    outputs.add_argument(
+        '--no-bed',
+        dest=str(no_bed),
+        action='store_const',
+        const=True,
+        default=False,
+        required=False,
+        metavar='NO BED OUTPUT',
+        help="Do we suppress BED output? Incompatible with '--no-fasta' and '--gff'"
+    )
+    outputs.add_argument(
+        '--gff',
+        dest=str(gff),
+        action='store_const',
+        const=True,
+        default=False,
+        required=False,
+        metavar='GFF OUTPUT',
+        help="Output GFF instead of BED format, incompatible with '--no-bed'"
+    )
+    return parser
+
+
+def _validate_args(args):
+    try:
+        assert isinstance(args, dict)
+    except AssertionError:
+        raise TypeError("Args must be a dictionary!")
+
+#   Main
+def main():
+    """potato"""
+    parser = _arguments()
+    if not sys.argv[1:]:
+        sys.exit(parser.print_help())
+    args = vars(parser.parse_args())
+    sys.exit(args)
+    try:
+        reference = SeqIO.to_dict(SeqIO.parse(args['reference'], 'fasta'))
+    except FileNotFoundError as error:
+        sys.exit("Failed to find " + error.filename)
+
+
+if __name__ == '__main__':
+    main()
+
