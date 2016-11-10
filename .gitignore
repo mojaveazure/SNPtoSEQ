@@ -2,6 +2,18 @@
 ##############################
 .vscode/
 
+# Ignore the __pycache__/ directory
+###################################
+__pycache__/
+
 # Ignore VCF files
 ##################
 *.vcf
+
+# Ignore BED files
+##################
+*.bed
+
+# Ignore FASTA files
+####################
+*.fasta
