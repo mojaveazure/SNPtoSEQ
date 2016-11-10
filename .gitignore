@@ -1,0 +1,7 @@
+# Ignore the vscode/ directory
+##############################
+.vscode/
+
+# Ignore VCF files
+##################
+*.vcf
