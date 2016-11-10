@@ -187,7 +187,7 @@ def _arguments():
         default=None,
         required=False,
         metavar='OUTPUT NAME',
-        help="Basename for the output file(s), defaults to the basename of '-v | --vcf'"
+        help="Basename for the output file(s), defaults to the name of '-v | --vcf' with modified extensions"
     )
     switches = outputs.add_mutually_exclusive_group(required=False)
     switches.add_argument( # No FASTA ouptut switch

@@ -28,8 +28,8 @@ Output Options:
   Provide an output name as well as choose if we suppress some output
 
   -o OUTPUT NAME, --outname OUTPUT NAME
-                        Basename for the output file(s), defaults to the
-                        basename of '-v | --vcf'
+                        Basename for the output file(s), defaults to the name
+                        of '-v | --vcf' with modified extensions
   --no-fasta            Do we suppress FASTA output? Incompatible with '--no-
                         bed'
   --no-bed              Do we suppress BED output? Incompatible with '--no-
