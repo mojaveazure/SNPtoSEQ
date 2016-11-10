@@ -133,10 +133,13 @@ class Seq(object):
 #   Make an argument parser
 def _arguments():
     (vcffile, reference, outname, window, no_fasta, no_bed) = _ARGUMENTS
-    parser = argparse.ArgumentParser(add_help=False)
+    parser = argparse.ArgumentParser(
+        add_help=False,
+        description="Capture SNP contextual sequences into BED and/or FASTA format"
+    )
     inputs = parser.add_argument_group(
         title='Input Options',
-        description='Hot potato'
+        description='Provide a VCF file of SNPs and a reference genome in FASTA format'
     )
     inputs.add_argument( # VCF file
         '-v',
@@ -146,7 +149,7 @@ def _arguments():
         default=None,
         required=True,
         metavar='VCF FILE',
-        help="Input VCF file"
+        help="SNPs in VCF format"
     )
     inputs.add_argument( # Reference genome
         '-r',
@@ -160,7 +163,7 @@ def _arguments():
     )
     windowsize = parser.add_argument_group(
         title='Window options',
-        description='Set window size'
+        description='Select a one-sided window size to capture in contextual sequence; this size represents the amount of sequence on each side of the SNP to capture'
     )
     windowsize.add_argument( # Window size
         '-w',
@@ -170,11 +173,11 @@ def _arguments():
         default=_WINDOW,
         required=False,
         metavar='WINDOW SIZE',
-        help="Set the window size for capturing contextual sequence, defaults to %d" % _WINDOW
+        help="Set the window size, defaults to %d" % _WINDOW
     )
     outputs = parser.add_argument_group(
         title='Output Options',
-        description='Set output options'
+        description='Provide an output name as well as choose if we suppress some output'
     )
     outputs.add_argument( # Outname
         '-o',
