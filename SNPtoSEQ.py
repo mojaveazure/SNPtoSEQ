@@ -24,7 +24,6 @@ _ARGUMENTS = (
     'window',
     'no_fasta',
     'no_bed'
-    # 'gff'
 )
 _WINDOW = 120
 
@@ -79,8 +78,7 @@ class Bed(object):
             name = self._name
         else:
             name = self._chrom + ':' + str(self._start) + '-' + str(self._end)
-        seq = Seq(seqid=name, sequence=sequence)
-        return seq
+        return Seq(seqid=name, sequence=sequence)
 
     def format_bed(self):
         """Return this annotation in BED format"""
@@ -257,7 +255,7 @@ def funky_sub(center, windowsize, maximum=None):
     if lower < 0:
         lower = 0
     upper = center + windowsize
-    if maximum and upper > maximum:
+    if maximum and (upper > maximum):
         upper = maximum
     return(lower, upper)
 
@@ -278,7 +276,7 @@ def capture_region(chromosome, position, name, reference, window):
         assert chromosome in reference.keys()
     except AssertionError:
         raise ValueError("Cannot find chromosome %s in the reference" % chromosome)
-    lower, upper = funky_sub(center=position, windowsize=window)
+    lower, upper = funky_sub(center=position, windowsize=window, maximum=len(reference[chromosome]))
     return Bed(chrom=chromosome, start=lower-1, end=upper, name=name, strand='+')
 
 
@@ -302,6 +300,10 @@ def capture_region(snp_tuple, reference, window):
         reference=reference,
         window=window
     )
+
+
+#   Sorting SNPs
+def sort_bed()
 
 
 #   Main
